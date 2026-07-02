@@ -78,10 +78,9 @@ const CAMERA_OFFSETS = {
 };
 
 // Keyframes matching scroll sections (Progress indices 0 to 6)
-// We instantiate them; their values are dynamically updated in the animation loop
 const KEYFRAMES = [
     {   // 0. Home: Wide Solar System view looking at the Sun
-        pos: new THREE.Vector3(0, 16, 65), 
+        pos: new THREE.Vector3(0, 20, 75), 
         lookAt: new THREE.Vector3(0, 0, 0)
     },
     {   // 1. Profile (Venus focus) - dynamic
@@ -105,8 +104,8 @@ const KEYFRAMES = [
         lookAt: new THREE.Vector3(-30, 0, -195)
     },
     {   // 6. Contact (Wide overview pull-back looking towards inner solar system)
-        pos: new THREE.Vector3(-75, 45, -130), 
-        lookAt: new THREE.Vector3(0, -5, -40)
+        pos: new THREE.Vector3(-65, 38, -120), 
+        lookAt: new THREE.Vector3(0, -3, -30)
     }
 ];
 
@@ -127,7 +126,7 @@ function initThree() {
     
     // Scene setup
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x020206, 0.0015);
+    scene.fog = new THREE.FogExp2(0x020206, 0.001);
     
     // Camera setup
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -144,12 +143,12 @@ function initThree() {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.06);
+    // Lighting - Increased base ambient light for planet visibility
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.12);
     scene.add(ambientLight);
     
     // Camera headlight (flashlight) to illuminate dark sides of planets
-    cameraLight = new THREE.PointLight(0xffffff, 0.35, 250, 0.6);
+    cameraLight = new THREE.PointLight(0xffffff, 0.75, 300, 0.55);
     cameraLight.position.copy(camera.position);
     scene.add(cameraLight);
     
@@ -248,7 +247,7 @@ function generateProceduralTexture(type, colorBase, colorDetail) {
     else if (type === 'nebula') {
         ctx.clearRect(0, 0, size, size);
         const grad = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
-        grad.addColorStop(0, colorBase); // base color
+        grad.addColorStop(0, colorBase);
         grad.addColorStop(0.3, colorBase.replace('0.6', '0.2'));
         grad.addColorStop(0.7, colorBase.replace('0.6', '0.05'));
         grad.addColorStop(1, 'rgba(0,0,0,0)');
@@ -441,9 +440,9 @@ function generateSaturnRingTexture() {
    ========================================================================== */
 
 function createStarfield() {
-    createStarLayer(4000, 0.45, 0.4, 900);
-    createStarLayer(1500, 0.80, 0.7, 600);
-    createStarLayer(400,  1.35, 0.9, 300);
+    createStarLayer(4000, 1.0, 0.45, 900);
+    createStarLayer(1500, 1.5, 0.70, 600);
+    createStarLayer(400,  2.0, 0.90, 300);
 }
 
 function createStarLayer(count, size, opacity, radiusRange) {
@@ -471,12 +470,15 @@ function createStarLayer(count, size, opacity, radiusRange) {
         colorVal = 0x7f00ff; // Purple
     }
     
+    // Set sizeAttenuation to false to guarantee stars render as sharp crisp points of light at any camera distance!
+    // Set fog to false to prevent stars from being washed out by planetary fog!
     const material = new THREE.PointsMaterial({
         size: size,
         color: colorVal,
         transparent: true,
         opacity: opacity,
-        sizeAttenuation: true
+        sizeAttenuation: false,
+        fog: false
     });
     
     const layer = new THREE.Points(geometry, material);
@@ -502,12 +504,12 @@ function createAsteroidBelt() {
     const dummy = new THREE.Object3D();
     
     for (let i = 0; i < count; i++) {
-        const radius = 13 + Math.random() * 19;
+        const radius = 12 + Math.random() * 16;
         const angle = Math.random() * Math.PI * 2;
         
         const x = Math.cos(angle) * radius;
         const y = (Math.random() - 0.5) * 1.8;
-        const z = Math.sin(angle) * radius; // Orbit in XZ-plane centered at Sun
+        const z = Math.sin(angle) * radius;
         
         dummy.position.set(x, y, z);
         
@@ -563,32 +565,30 @@ function createOrbitRings() {
     });
 }
 
-// Distant comets with glowing tails
+// Distant comets with glowing tails (No Fog)
 function createComets() {
-    // Spawn 2 comets
     const cometColors = [0xccf2ff, 0xffcccc];
     
     for (let i = 0; i < 2; i++) {
         const cometGroup = new THREE.Group();
         
-        // Comet Nucleus (Glowing sphere)
         const nucGeo = new THREE.SphereGeometry(0.08, 16, 16);
-        const nucMat = new THREE.MeshBasicMaterial({ color: cometColors[i] });
+        const nucMat = new THREE.MeshBasicMaterial({ color: cometColors[i], fog: false });
         const nucleus = new THREE.Mesh(nucGeo, nucMat);
         cometGroup.add(nucleus);
         
-        // Comet Tail (Glowing cone)
         const tailGeo = new THREE.ConeGeometry(0.12, 1.8, 16);
-        tailGeo.rotateX(Math.PI / 2); // point cone back along Z-axis helper
+        tailGeo.rotateX(Math.PI / 2);
         const tailMat = new THREE.MeshBasicMaterial({
             color: cometColors[i],
             transparent: true,
             opacity: 0.22,
             blending: THREE.AdditiveBlending,
-            depthWrite: false
+            depthWrite: false,
+            fog: false
         });
         const tail = new THREE.Mesh(tailGeo, tailMat);
-        tail.position.set(0, 0, 0.9); // offset tail back
+        tail.position.set(0, 0, 0.9);
         cometGroup.add(tail);
         
         scene.add(cometGroup);
@@ -597,18 +597,18 @@ function createComets() {
             tail: tail,
             speed: 0.05 + Math.random() * 0.05,
             offset: Math.random() * Math.PI * 2,
-            a: 75 + i*15, // semi-major axis
-            b: 22 + i*5   // semi-minor axis
+            a: 75 + i*15,
+            b: 22 + i*5
         });
     }
 }
 
-// Deep space faint nebulae clouds
+// Deep space faint nebulae clouds (No Fog)
 function createNebulae() {
     const cloudColors = [
-        'rgba(0, 242, 254, 0.6)', // Cyan
-        'rgba(127, 0, 255, 0.6)', // Purple
-        'rgba(255, 0, 127, 0.6)'  // Magenta
+        'rgba(0, 242, 254, 0.6)',
+        'rgba(127, 0, 255, 0.6)',
+        'rgba(255, 0, 127, 0.6)'
     ];
     
     const depths = [-350, -420, -280];
@@ -625,7 +625,8 @@ function createNebulae() {
             transparent: true,
             opacity: 0.16,
             blending: THREE.AdditiveBlending,
-            depthWrite: false
+            depthWrite: false,
+            fog: false
         });
         
         const geom = new THREE.PlaneGeometry(350, 350);
@@ -668,7 +669,8 @@ function createCelestialBodies() {
         opacity: 0.4,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
-        depthWrite: false
+        depthWrite: false,
+        fog: false
     });
     sunRays1 = new THREE.Mesh(rayGeo, rayMat);
     sunRays2 = new THREE.Mesh(rayGeo, rayMat);
@@ -756,7 +758,7 @@ function createCelestialBodies() {
     earth.pivot.add(earth);
     scene.add(earth.pivot);
     
-    // Moon (Add to earth.pivot so it follows Earth's orbit locally)
+    // Moon
     const moonTexture = generateProceduralTexture('cratered', '#909090', '#3b3b3b');
     const moonMat = new THREE.MeshPhongMaterial({ map: moonTexture, shininess: 2 });
     moon = new THREE.Mesh(sphereGeometry, moonMat);
@@ -990,7 +992,7 @@ function animate() {
     
     const time = Date.now() * 0.0003;
     
-    // 1. Dynamic Physics-inspired Orbital Movements (slow and elegant)
+    // 1. Dynamic Physics-inspired Orbital Movements
     if (mercury && mercury.pivot) {
         const theta = time * ORBIT_SPEEDS.mercury;
         mercury.pivot.position.set(Math.cos(theta) * ORBIT_RADII.mercury, 0, Math.sin(theta) * ORBIT_RADII.mercury);
@@ -1001,7 +1003,6 @@ function animate() {
         venus.pivot.position.set(Math.cos(theta) * ORBIT_RADII.venus, 0, Math.sin(theta) * ORBIT_RADII.venus);
         venus.rotation.y = -time * 0.35;
         
-        // Update dynamic Keyframe targets for Venus focus (Section 1)
         KEYFRAMES[1].lookAt.copy(venus.pivot.position);
         KEYFRAMES[1].pos.copy(venus.pivot.position).add(CAMERA_OFFSETS.venus);
     }
@@ -1011,14 +1012,12 @@ function animate() {
         earth.rotation.y = time * 0.8;
         if (clouds) clouds.rotation.y = time * 0.92;
         
-        // Local Moon orbit revolving around the tilted earth.pivot
         if (moon) {
             const moonSpeed = time * 1.5;
             moon.position.set(Math.cos(moonSpeed) * 2.8, 0, Math.sin(moonSpeed) * 2.8);
             moon.rotation.y = moonSpeed;
         }
         
-        // Update dynamic Keyframe targets for Earth focus (Section 2)
         KEYFRAMES[2].lookAt.copy(earth.pivot.position);
         KEYFRAMES[2].pos.copy(earth.pivot.position).add(CAMERA_OFFSETS.earth);
     }
@@ -1027,7 +1026,6 @@ function animate() {
         mars.pivot.position.set(Math.cos(theta) * ORBIT_RADII.mars, 0, Math.sin(theta) * ORBIT_RADII.mars);
         mars.rotation.y = time * 0.75;
         
-        // Update dynamic Keyframe targets for Mars focus (Section 3)
         KEYFRAMES[3].lookAt.copy(mars.pivot.position);
         KEYFRAMES[3].pos.copy(mars.pivot.position).add(CAMERA_OFFSETS.mars);
     }
@@ -1036,7 +1034,6 @@ function animate() {
         jupiter.pivot.position.set(Math.cos(theta) * ORBIT_RADII.jupiter, 0, Math.sin(theta) * ORBIT_RADII.jupiter);
         jupiter.rotation.y = time * 1.8;
         
-        // Update dynamic Keyframe targets for Jupiter focus (Section 4)
         KEYFRAMES[4].lookAt.copy(jupiter.pivot.position);
         KEYFRAMES[4].pos.copy(jupiter.pivot.position).add(CAMERA_OFFSETS.jupiter);
     }
@@ -1046,7 +1043,6 @@ function animate() {
         saturn.rotation.y = time * 1.5;
         if (saturnRings) saturnRings.rotation.z = -time * 0.1;
         
-        // Update dynamic Keyframe targets for Saturn focus (Section 5)
         KEYFRAMES[5].lookAt.copy(saturn.pivot.position);
         KEYFRAMES[5].pos.copy(saturn.pivot.position).add(CAMERA_OFFSETS.saturn);
     }
@@ -1064,7 +1060,6 @@ function animate() {
     }
     
     // 2. Smooth Camera Flight (Lerp)
-    // Now tracking orbiting planets dynamically!
     currentCameraPos.lerp(targetCameraPos, 0.035);
     currentCameraTarget.lerp(targetCameraTarget, 0.035);
     
@@ -1100,12 +1095,9 @@ function animate() {
         const t = time * comet.speed + comet.offset;
         const x = Math.cos(t) * comet.a;
         const z = Math.sin(t) * comet.b;
-        const y = Math.sin(t) * (comet.b * 0.35); // tilt orbital plane slightly
+        const y = Math.sin(t) * (comet.b * 0.35);
         
         comet.group.position.set(x, y, z);
-        
-        // Orient tail pointing directly away from the Sun (0, 0, 0)
-        // Since lookAt points the face towards target, pointing it at Sun will align tail backwards correctly
         comet.tail.lookAt(0, 0, 0);
     });
     
