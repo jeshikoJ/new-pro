@@ -576,7 +576,8 @@ function createOrbitRings() {
         }
         
         geometry.setFromPoints(points);
-        const line = new THREE.Line(geometry, material);
+        const lineMat = material.clone();
+        const line = new THREE.Line(geometry, lineMat);
         scene.add(line);
         orbitLines.push(line);
     });
@@ -1100,17 +1101,29 @@ function animate() {
         if (neptuneRings) neptuneRings.rotation.z = -time * 0.1;
     }
     
-    // 2. Smooth Camera Flight (Lerp)
+    // 2. Smooth Camera Flight (Lerp) & Handheld Camera Breathing
     currentCameraPos.lerp(targetCameraPos, 0.035);
     currentCameraTarget.lerp(targetCameraTarget, 0.035);
     
+    // Gentle cinematic handheld float (sine-based camera breathing)
+    const breathX = Math.sin(time * 1.8) * 0.55;
+    const breathY = Math.cos(time * 1.3) * 0.4;
+    const breathZ = Math.sin(time * 0.7) * 0.5;
+    
     camera.position.copy(currentCameraPos);
+    camera.position.x += breathX;
+    camera.position.y += breathY;
+    camera.position.z += breathZ;
     
     // Apply mouse parallax drift
     camera.position.x += (mouseX - camera.position.x * 0.005) * 0.1;
     camera.position.y += (-mouseY - camera.position.y * 0.005) * 0.1;
     
-    camera.lookAt(currentCameraTarget);
+    // Smooth target lookAt breathing
+    const tempTarget = currentCameraTarget.clone();
+    tempTarget.x += Math.sin(time * 1.0) * 0.2;
+    tempTarget.y += Math.cos(time * 0.8) * 0.15;
+    camera.lookAt(tempTarget);
     
     // Update camera headlight position to match camera
     if (cameraLight) {
@@ -1122,16 +1135,28 @@ function animate() {
     fovWarpTarget += (45 - fovWarpTarget) * 0.06;
     camera.updateProjectionMatrix();
     
-    // 4. Volumetric Sun Flare shimmers
-    if (sunRays1) sunRays1.rotation.z = time * 0.07;
-    if (sunRays2) sunRays2.rotation.z = -time * 0.04;
+    // 4. Volumetric Sun Flare shimmers & heatwave pulses
+    if (sun) {
+        const sunPulse = 1.0 + Math.sin(time * 2.2) * 0.012;
+        sun.scale.set(sunPulse, sunPulse, sunPulse);
+    }
+    if (sunRays1) {
+        sunRays1.rotation.z = time * 0.07;
+        const rayPulse = 1.0 + Math.sin(time * 3.5) * 0.035;
+        sunRays1.scale.set(rayPulse, rayPulse, rayPulse);
+    }
+    if (sunRays2) {
+        sunRays2.rotation.z = -time * 0.04;
+        const rayPulse = 1.0 + Math.cos(time * 2.8) * 0.03;
+        sunRays2.scale.set(rayPulse, rayPulse, rayPulse);
+    }
     
     // 5. Instanced 3D Belt revolving centered at Sun
     if (asteroids) {
         asteroids.rotation.y = time * 0.06;
     }
     
-    // 6. Comet highly eccentric orbit animation
+    // 6. Comet highly eccentric orbit animation & sublimation tail growth
     comets.forEach(comet => {
         const t = time * comet.speed + comet.offset;
         const x = Math.cos(t) * comet.a;
@@ -1140,6 +1165,18 @@ function animate() {
         
         comet.group.position.set(x, y, z);
         comet.tail.lookAt(0, 0, 0);
+        
+        // Dynamically scale tail length and opacity based on proximity to the Sun
+        const dist = Math.sqrt(x*x + y*y + z*z);
+        const proximity = 1.0 - Math.min(1.0, Math.max(0.0, (dist - comet.b) / (comet.a - comet.b)));
+        const tailLen = 0.5 + proximity * 1.6;
+        comet.tail.scale.set(1.0, 1.0, tailLen);
+        comet.tail.material.opacity = 0.1 + proximity * 0.32;
+    });
+    
+    // 7. Pulse orbit lines glow independently
+    orbitLines.forEach((line, idx) => {
+        line.material.opacity = 0.04 + Math.sin(time * 1.5 + idx * 0.8) * 0.025;
     });
     
     // 7. Nebula slow drifting rotation
