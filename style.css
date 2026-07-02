@@ -13,8 +13,8 @@
     --purple-glow: #7f00ff;
     --magenta-glow: #ff007f;
     --text-primary: #ffffff;
-    --text-secondary: #cbd5e1;
-    --text-muted: #64748b;
+    --text-secondary: #f1f5f9; /* Much brighter slate-100 for maximum readability */
+    --text-muted: #a3b3c9; /* Brighter cool gray for muted descriptions */
     
     /* Fonts */
     --font-orbitron: 'Orbitron', sans-serif;
@@ -43,6 +43,8 @@ body {
     font-family: var(--font-inter);
     overflow-x: hidden;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Custom Scrollbar */
