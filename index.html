@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeshiko J | Full-Stack & DevOps Portfolio</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 3D Canvas Background -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Ambient Grid and Stars Background Overlay -->
+    <div class="stars-overlay"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- Active Planet Label Indicator -->
+    <div id="planet-indicator">
+        <span class="indicator-dot"></span>
+        <span id="active-planet-name">SOLAR SYSTEM</span>
+    </div>
+
+    <!-- Floating Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-logo">
+            <span class="logo-accent">&lt;</span>JESHIKO<span class="logo-accent"> /&gt;</span>
+        </div>
+        <nav class="nav-links">
+            <a href="#home" class="active">Home</a>
+            <a href="#profile">Profile</a>
+            <a href="#skills">Skills</a>
+            <a href="#experience">Experience</a>
+            <a href="#projects">Projects</a>
+            <a href="#certifications">Certifications</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <div class="nav-mobile-btn">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </header>
+
+    <!-- Main Scrolling Container -->
+    <main class="scroll-container">
+        
+        <!-- SECTION 1: HERO / HOME (Sun) -->
+        <section id="home" class="sec-slide active-sec">
+            <div class="sec-content hero-content">
+                <div class="hero-tag">WELCOME TO MY ORBIT</div>
+                <h1 class="hero-title">JESHIKO J</h1>
+                <h2 class="hero-subtitle">Software Engineer & DevOps Explorer</h2>
+                <p class="hero-desc">
+                    Motivated software engineer specializing in end-to-end full-stack web development (Python, Django, React) and automated, scalable cloud architectures (AWS, Docker, CI/CD).
+                </p>
+                <div class="contact-quick">
+                    <a href="mailto:chandranjeshiko@gmail.com"><i class="fa-solid fa-envelope"></i> Email</a>
+                    <a href="https://linkedin.com/in/JeshikoJ" target="_blank"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+                    <a href="tel:+917395881571"><i class="fa-solid fa-phone"></i> +91 7395881571</a>
+                </div>
+                <div class="scroll-indicator">
+                    <span class="mouse-icon">
+                        <span class="mouse-wheel"></span>
+                    </span>
+                    <span class="scroll-text">Scroll down to launch</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: PROFESSIONAL PROFILE (Mercury & Venus) -->
+        <section id="profile" class="sec-slide">
+            <div class="sec-content panel-card float-right">
+                <div class="card-header">
+                    <span class="card-num">01</span>
+                    <h3>Professional Profile</h3>
+                </div>
+                <p class="summary-text">
+                    I am a software engineer with hands-on experience in full-stack web development, building scalable applications from end to end. I am actively expanding my expertise in cloud computing, DevOps automation, CI/CD pipelines, and Infrastructure as Code (IaC) to contribute to high-performance engineering teams.
+                </p>
+                <div class="details-grid">
+                    <div class="details-item">
+                        <div class="details-label">Focus Areas</div>
+                        <div class="details-val">Full-Stack Development, Cloud Computing, DevOps Automation</div>
+                    </div>
+                    <div class="details-item">
+                        <div class="details-label">Locations</div>
+                        <div class="details-val">Kanyakumari, Tamil Nadu, India</div>
+                    </div>
+                    <div class="details-item">
+                        <div class="details-label">Education</div>
+                        <div class="details-val">
+                            <strong>Bachelor of Engineering (B.E.)</strong><br>
+                            Computer Science & Engineering<br>
+                            <span class="sub-detail">Bethlahem Institute of Engineering</span><br>
+                            <span class="grad-tag">Graduating June 2025</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: TECHNICAL SKILLS (Earth & Moon) -->
+        <section id="skills" class="sec-slide">
+            <div class="sec-content panel-card float-left large-panel">
+                <div class="card-header">
+                    <span class="card-num">02</span>
+                    <h3>Technical Arsenal</h3>
+                </div>
+                <div class="skills-tabs">
+                    <button class="tab-btn active" onclick="switchSkillsTab('devops')">Cloud & DevOps</button>
+                    <button class="tab-btn" onclick="switchSkillsTab('backend')">Backend & APIs</button>
+                    <button class="tab-btn" onclick="switchSkillsTab('frontend')">Frontend</button>
+                    <button class="tab-btn" onclick="switchSkillsTab('tools')">Tools & Soft Skills</button>
+                </div>
+                
+                <div class="skills-tab-content active" id="tab-devops">
+                    <div class="skills-grid">
+                        <div class="skill-pill"><i class="fa-brands fa-aws font-aws"></i> AWS (EC2, S3, IAM, VPC, RDS)</div>
+                        <div class="skill-pill"><i class="fa-brands fa-docker font-docker"></i> Docker</div>
+                        <div class="skill-pill"><i class="fa-solid fa-cubes"></i> Kubernetes</div>
+                        <div class="skill-pill"><i class="fa-solid fa-code-branch"></i> Terraform / IaC</div>
+                        <div class="skill-pill"><i class="fa-solid fa-gears"></i> Ansible</div>
+                        <div class="skill-pill"><i class="fa-solid fa-arrows-spin"></i> CI/CD Pipelines</div>
+                        <div class="skill-pill"><i class="fa-brands fa-jenkins"></i> Jenkins</div>
+                    </div>
+                </div>
+
+                <div class="skills-tab-content" id="tab-backend">
+                    <div class="skills-grid">
+                        <div class="skill-pill"><i class="fa-brands fa-python font-python"></i> Python</div>
+                        <div class="skill-pill"><i class="fa-solid fa-server"></i> Django Framework</div>
+                        <div class="skill-pill"><i class="fa-solid fa-network-wired"></i> RESTful APIs</div>
+                        <div class="skill-pill"><i class="fa-solid fa-database"></i> MongoDB</div>
+                        <div class="skill-pill"><i class="fa-solid fa-chart-line"></i> Data Analysis (pandas, scikit-learn)</div>
+                    </div>
+                </div>
+
+                <div class="skills-tab-content" id="tab-frontend">
+                    <div class="skills-grid">
+                        <div class="skill-pill"><i class="fa-brands fa-js font-js"></i> JavaScript (ES6+)</div>
+                        <div class="skill-pill"><i class="fa-brands fa-react font-react"></i> React.js</div>
+                        <div class="skill-pill"><i class="fa-brands fa-html5 font-html"></i> HTML5</div>
+                        <div class="skill-pill"><i class="fa-brands fa-css3-alt font-css"></i> CSS3</div>
+                        <div class="skill-pill"><i class="fa-solid fa-bolt"></i> Vite</div>
+                        <div class="skill-pill"><i class="fa-solid fa-wind"></i> Tailwind CSS</div>
+                    </div>
+                </div>
+
+                <div class="skills-tab-content" id="tab-tools">
+                    <div class="skills-grid">
+                        <div class="skill-pill"><i class="fa-solid fa-code"></i> VS Code</div>
+                        <div class="skill-pill"><i class="fa-brands fa-git-alt"></i> Git & GitHub</div>
+                        <div class="skill-pill"><i class="fa-brands fa-github-actions"></i> GitHub Actions</div>
+                        <div class="skill-pill"><i class="fa-solid fa-terminal"></i> Linux / Bash</div>
+                        <div class="skill-pill"><i class="fa-solid fa-box"></i> Maven</div>
+                        <div class="skill-pill"><i class="fa-solid fa-lightbulb"></i> Problem Solving</div>
+                        <div class="skill-pill"><i class="fa-solid fa-people-group"></i> Team Collaboration</div>
+                        <div class="skill-pill"><i class="fa-solid fa-gauge-high"></i> Quick Learning</div>
+                        <div class="skill-pill"><i class="fa-solid fa-magnifying-glass"></i> Attention to Detail</div>
+                        <div class="skill-pill"><i class="fa-solid fa-hourglass-half"></i> Time Management</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: WORK EXPERIENCE (Mars & Asteroids) -->
+        <section id="experience" class="sec-slide">
+            <div class="sec-content panel-card float-right large-panel">
+                <div class="card-header">
+                    <span class="card-num">03</span>
+                    <h3>Professional Orbit</h3>
+                </div>
+                <div class="timeline">
+                    <!-- Item 1 -->
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-date">Jun 2024 - Aug 2024</span>
+                            <h4>Software Development Intern</h4>
+                            <h5>Crescent Infotech</h5>
+                            <ul class="timeline-bullets">
+                                <li>Developed <strong>3+ intelligent software prototypes</strong> by applying machine learning and data processing concepts, reducing manual data handling time by <strong>approximately 30%</strong>.</li>
+                                <li>Completed end-to-end software development workflows across <strong>2 project cycles</strong>, improving delivery speed and codebase reliability.</li>
+                                <li>Collaborated with a team of 5 developers to build and test data-driven solutions, strengthening Python programming and analytical skills.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Item 2 -->
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-date">Industrial Visit</span>
+                            <h4>Industrial Visit Participant</h4>
+                            <h5>Srishti Campus</h5>
+                            <ul class="timeline-bullets">
+                                <li>Observed agile project management workflows used across <strong>4+ enterprise software teams</strong>, gaining direct insight into real-world DevOps and production deployment practices.</li>
+                                <li>Identified <strong>3 key areas</strong> for personal skill development in cloud infrastructure and CI/CD automation based on enterprise technology exposure.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: PROJECTS (Jupiter & Saturn) -->
+        <section id="projects" class="sec-slide">
+            <div class="sec-content panel-card float-left large-panel">
+                <div class="card-header">
+                    <span class="card-num">04</span>
+                    <h3>Key Missions</h3>
+                </div>
+                <div class="projects-container">
+                    <!-- Project 1 -->
+                    <div class="project-box">
+                        <div class="project-tags">
+                            <span>Django</span>
+                            <span>MongoDB</span>
+                            <span>JavaScript</span>
+                            <span>REST API</span>
+                        </div>
+                        <h4>Full-Stack E-Commerce Platform</h4>
+                        <p>
+                            Designed and developed a fully functional e-commerce platform incorporating product cataloging, secure user authentication, product listings, cart systems, order management, and payment integrations.
+                        </p>
+                        <ul class="proj-bullets">
+                            <li>Optimized front-end components across 10+ responsive pages using lazy loading and code-splitting, yielding a <strong>40% reduction in page load time</strong>.</li>
+                            <li>Implemented structured backend handling 3 data models (products, orders, users) following robust MVC patterns for maintainable code.</li>
+                        </ul>
+                    </div>
+                    <!-- Project 2 -->
+                    <div class="project-box">
+                        <div class="project-tags">
+                            <span>React</span>
+                            <span>Vite</span>
+                            <span>Tailwind CSS</span>
+                            <span>CI/CD</span>
+                        </div>
+                        <h4>Portfolio Website with CI/CD Motif</h4>
+                        <p>
+                            Developed a highly polished, responsive developer portfolio showcasing project histories, skills, and certifications.
+                        </p>
+                        <ul class="proj-bullets">
+                            <li>Designed with a professional Git and CI/CD pipeline visual motif, emphasizing a clean aesthetic.</li>
+                            <li>Integrated automated deployment pipelines using GitHub Actions to streamline continuous delivery.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: CERTIFICATIONS & TRAINING (Uranus & Neptune) -->
+        <section id="certifications" class="sec-slide">
+            <div class="sec-content panel-card float-right large-panel">
+                <div class="card-header">
+                    <span class="card-num">05</span>
+                    <h3>Credentials & Certifications</h3>
+                </div>
+                
+                <div class="certifications-grid">
+                    <div class="cert-card">
+                        <div class="cert-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                        <div class="cert-info">
+                            <h5>Cloud DevOps Certification</h5>
+                            <span class="cert-org">SLA (Softlogic Academy, 2026)</span>
+                            <p class="cert-text">Docker, CI/CD Pipelines, Infrastructure Automation, Containerization, DevOps Practices</p>
+                        </div>
+                    </div>
+                    <div class="cert-card">
+                        <div class="cert-icon"><i class="fa-solid fa-brain"></i></div>
+                        <div class="cert-info">
+                            <h5>AI & ML Internship</h5>
+                            <span class="cert-org">Crescent Infotech (2024)</span>
+                            <p class="cert-text">Python, scikit-learn, ML Prototyping, Data Processing, Production Workflows</p>
+                        </div>
+                    </div>
+                    <div class="cert-card">
+                        <div class="cert-icon"><i class="fa-solid fa-code"></i></div>
+                        <div class="cert-info">
+                            <h5>Python Full Stack Development</h5>
+                            <span class="cert-org">E-MAX (2025)</span>
+                            <p class="cert-text">Backend (Django), Frontend (React), REST APIs, MongoDB, Complete Web Development</p>
+                        </div>
+                    </div>
+                    <div class="cert-card">
+                        <div class="cert-icon"><i class="fa-solid fa-chart-simple"></i></div>
+                        <div class="cert-info">
+                            <h5>Data Science with Python</h5>
+                            <span class="cert-org">IAMAI (October 2023) & VEI Technologies (2022)</span>
+                            <p class="cert-text">pandas, scikit-learn, Statistical Analysis, Data Visualization, ML Fundamentals</p>
+                        </div>
+                    </div>
+                    <div class="cert-card">
+                        <div class="cert-icon"><i class="fa-solid fa-compass-drafting"></i></div>
+                        <div class="cert-info">
+                            <h5>Interaction Design & Prototyping</h5>
+                            <span class="cert-org">Feather (2024)</span>
+                            <p class="cert-text">UI/UX Design Principles, Figma, Prototyping Tools, User Experience Design</p>
+                        </div>
+                    </div>
+                    <div class="cert-card">
+                        <div class="cert-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                        <div class="cert-info">
+                            <h5>Web Development Internship</h5>
+                            <span class="cert-org">NoviTech (2023)</span>
+                            <p class="cert-text">HTML5, CSS3, JavaScript, Responsive Design, Frontend Development</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: CONTACT & DECLARATION (Deep Space Backview) -->
+        <section id="contact" class="sec-slide">
+            <div class="sec-content panel-card float-left large-panel">
+                <div class="card-header">
+                    <span class="card-num">06</span>
+                    <h3>Establish Connection</h3>
+                </div>
+                <div class="contact-layout">
+                    <div class="contact-info-panel">
+                        <p class="contact-pitch">
+                            Let's build something out of this world. Feel free to reach out for roles, project collaborations, or just to chat about tech!
+                        </p>
+                        <div class="contact-details-list">
+                            <div class="contact-detail-box">
+                                <i class="fa-solid fa-envelope"></i>
+                                <div>
+                                    <h6>Email Address</h6>
+                                    <p><a href="mailto:chandranjeshiko@gmail.com">chandranjeshiko@gmail.com</a></p>
+                                    <p><a href="mailto:jeshikochandran@gmail.com" class="sub-email">jeshikochandran@gmail.com</a></p>
+                                </div>
+                            </div>
+                            <div class="contact-detail-box">
+                                <i class="fa-solid fa-phone"></i>
+                                <div>
+                                    <h6>Phone Number</h6>
+                                    <p><a href="tel:+917395881571">+91 7395881571</a></p>
+                                </div>
+                            </div>
+                            <div class="contact-detail-box">
+                                <i class="fa-solid fa-map-location-dot"></i>
+                                <div>
+                                    <h6>Location</h6>
+                                    <p>Kanyakumari, Tamil Nadu, India</p>
+                                </div>
+                            </div>
+                            <div class="contact-detail-box">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                                <div>
+                                    <h6>LinkedIn Profile</h6>
+                                    <p><a href="https://linkedin.com/in/JeshikoJ" target="_blank">linkedin.com/in/JeshikoJ</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form class="contact-form" onsubmit="event.preventDefault(); alert('Message sent successfully!');">
+                        <div class="form-row">
+                            <input type="text" placeholder="Your Name" required>
+                            <input type="email" placeholder="Your Email" required>
+                        </div>
+                        <input type="text" placeholder="Subject" required>
+                        <textarea placeholder="Your Message" rows="5" required></textarea>
+                        <button type="submit" class="submit-btn">Send Message <i class="fa-solid fa-paper-plane"></i></button>
+                    </form>
+                </div>
+                
+                <!-- Declaration block -->
+                <div class="declaration-block">
+                    <p class="decl-text">
+                        "I hereby declare that the information provided above is true and complete to the best of my knowledge and belief."
+                    </p>
+                    <div class="decl-footer">
+                        <div>
+                            <span class="decl-label">Place:</span> Kanyakumari
+                        </div>
+                        <div>
+                            <span class="decl-label">Candidate:</span> JESHIKO J
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Import Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Custom WebGL and Interaction Script -->
+    <script src="script.js"></script>
+</body>
+</html>
