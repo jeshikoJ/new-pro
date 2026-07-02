@@ -1070,3 +1070,80 @@ body {
         bottom: 1rem;
     }
 }
+
+/* ==========================================================================
+   INTERACTIVE ADDITIONS: CURSOR, TYPING, 3D CARDS
+   ========================================================================== */
+
+/* Custom Cursor Follower */
+#custom-cursor {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--cyan-glow);
+    border-radius: 50%;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 9999;
+    transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+    opacity: 0;
+}
+
+#custom-cursor-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--cyan-glow);
+    border-radius: 50%;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 9999;
+    box-shadow: 0 0 8px var(--cyan-glow);
+    opacity: 0;
+}
+
+/* Custom Cursor Hover Enlarger */
+.cursor-hover {
+    width: 50px !important;
+    height: 50px !important;
+    background-color: rgba(0, 242, 254, 0.08);
+    border-color: var(--magenta-glow) !important;
+    box-shadow: 0 0 25px rgba(255, 0, 127, 0.5) !important;
+}
+
+.cursor-hover-dot {
+    background-color: var(--magenta-glow) !important;
+    box-shadow: 0 0 10px var(--magenta-glow) !important;
+}
+
+/* Hide standard system cursor on screens with mouse pointers */
+@media (pointer: fine) {
+    body, a, button, .tab-btn, .project-box, .skill-pill, .cert-card, .submit-btn, .nav-mobile-btn, .contact-form input, .contact-form textarea {
+        cursor: none;
+    }
+}
+
+/* Typing text blink cursor */
+.typing-cursor {
+    color: var(--cyan-glow);
+    animation: blink 0.8s infinite;
+    font-weight: bold;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* 3D tilt specifications on hover */
+.panel-card {
+    transform-style: preserve-3d;
+    will-change: transform;
+    perspective: 1000px;
+}
+
+.panel-card > * {
+    transform: translateZ(25px); /* Lift internal contents off card surface */
+}
+
