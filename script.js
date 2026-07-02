@@ -123,6 +123,12 @@ const SECTION_PLANETS = [
 // Initialize WebGL application
 function initThree() {
     const canvas = document.getElementById('bg-canvas');
+    if (!canvas) {
+        throw new Error("Canvas element '#bg-canvas' not found on the page.");
+    }
+    if (typeof THREE === 'undefined') {
+        throw new Error("Three.js library is not loaded. Please verify script source connectivity.");
+    }
     
     // Scene setup
     scene = new THREE.Scene();
@@ -136,14 +142,19 @@ function initThree() {
     renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    
+    if (THREE.ACESFilmicToneMapping) {
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.15;
+    }
     
     // Enable realistic shadow casting
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    if (renderer.shadowMap) {
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    }
     
-    // Lighting - Increased base ambient light for planet visibility
+    // Lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.12);
     scene.add(ambientLight);
     
@@ -155,12 +166,15 @@ function initThree() {
     // Sun light (Point light casting shadows in all directions)
     const sunLight = new THREE.PointLight(0xfff5e6, 2.5, 550, 0.45);
     sunLight.position.set(0, 0, 0);
-    sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 1024;
-    sunLight.shadow.mapSize.height = 1024;
-    sunLight.shadow.camera.near = 0.5;
-    sunLight.shadow.camera.far = 380;
-    sunLight.shadow.bias = -0.002;
+    
+    if (renderer.shadowMap) {
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 1024;
+        sunLight.shadow.mapSize.height = 1024;
+        sunLight.shadow.camera.near = 0.5;
+        sunLight.shadow.camera.far = 380;
+        sunLight.shadow.bias = -0.002;
+    }
     scene.add(sunLight);
     
     // Distant cosmic ambient lighting
@@ -470,8 +484,6 @@ function createStarLayer(count, size, opacity, radiusRange) {
         colorVal = 0x7f00ff; // Purple
     }
     
-    // Set sizeAttenuation to false to guarantee stars render as sharp crisp points of light at any camera distance!
-    // Set fog to false to prevent stars from being washed out by planetary fog!
     const material = new THREE.PointsMaterial({
         size: size,
         color: colorVal,
@@ -497,36 +509,40 @@ function createAsteroidBelt() {
         metalness: 0.05
     });
     
-    asteroids = new THREE.InstancedMesh(rockGeo, rockMat, count);
-    asteroids.castShadow = true;
-    asteroids.receiveShadow = true;
-    
-    const dummy = new THREE.Object3D();
-    
-    for (let i = 0; i < count; i++) {
-        const radius = 12 + Math.random() * 16;
-        const angle = Math.random() * Math.PI * 2;
+    if (THREE.InstancedMesh) {
+        asteroids = new THREE.InstancedMesh(rockGeo, rockMat, count);
+        if (renderer.shadowMap) {
+            asteroids.castShadow = true;
+            asteroids.receiveShadow = true;
+        }
         
-        const x = Math.cos(angle) * radius;
-        const y = (Math.random() - 0.5) * 1.8;
-        const z = Math.sin(angle) * radius;
+        const dummy = new THREE.Object3D();
         
-        dummy.position.set(x, y, z);
+        for (let i = 0; i < count; i++) {
+            const radius = 12 + Math.random() * 16;
+            const angle = Math.random() * Math.PI * 2;
+            
+            const x = Math.cos(angle) * radius;
+            const y = (Math.random() - 0.5) * 1.8;
+            const z = Math.sin(angle) * radius;
+            
+            dummy.position.set(x, y, z);
+            
+            dummy.rotation.set(
+                Math.random() * Math.PI,
+                Math.random() * Math.PI,
+                Math.random() * Math.PI
+            );
+            
+            const scale = Math.random() * 0.8 + 0.4;
+            dummy.scale.set(scale, scale, scale);
+            
+            dummy.updateMatrix();
+            asteroids.setMatrixAt(i, dummy.matrix);
+        }
         
-        dummy.rotation.set(
-            Math.random() * Math.PI,
-            Math.random() * Math.PI,
-            Math.random() * Math.PI
-        );
-        
-        const scale = Math.random() * 0.8 + 0.4;
-        dummy.scale.set(scale, scale, scale);
-        
-        dummy.updateMatrix();
-        asteroids.setMatrixAt(i, dummy.matrix);
+        scene.add(asteroids);
     }
-    
-    scene.add(asteroids);
 }
 
 // Horizontal Orbit Rings centered at the Sun
@@ -688,8 +704,10 @@ function createCelestialBodies() {
     });
     mercury = new THREE.Mesh(sphereGeometry, mercMat);
     mercury.scale.setScalar(0.4);
-    mercury.castShadow = true;
-    mercury.receiveShadow = true;
+    if (renderer.shadowMap) {
+        mercury.castShadow = true;
+        mercury.receiveShadow = true;
+    }
     
     mercury.pivot = new THREE.Group();
     mercury.pivot.rotation.z = AXIAL_TILTS.mercury;
@@ -706,8 +724,10 @@ function createCelestialBodies() {
     });
     venus = new THREE.Mesh(sphereGeometry, venMat);
     venus.scale.setScalar(0.9);
-    venus.castShadow = true;
-    venus.receiveShadow = true;
+    if (renderer.shadowMap) {
+        venus.castShadow = true;
+        venus.receiveShadow = true;
+    }
     
     venus.pivot = new THREE.Group();
     venus.pivot.rotation.z = AXIAL_TILTS.venus;
@@ -726,8 +746,10 @@ function createCelestialBodies() {
     });
     earth = new THREE.Mesh(sphereGeometry, earthMat);
     earth.scale.setScalar(1.0);
-    earth.castShadow = true;
-    earth.receiveShadow = true;
+    if (renderer.shadowMap) {
+        earth.castShadow = true;
+        earth.receiveShadow = true;
+    }
     
     // Atmosphere glow
     const earthGlowGeo = new THREE.SphereGeometry(1.12, 64, 64);
@@ -749,8 +771,10 @@ function createCelestialBodies() {
         opacity: 0.42
     });
     clouds = new THREE.Mesh(new THREE.SphereGeometry(1.025, 64, 64), cloudMat);
-    clouds.castShadow = true;
-    clouds.receiveShadow = true;
+    if (renderer.shadowMap) {
+        clouds.castShadow = true;
+        clouds.receiveShadow = true;
+    }
     earth.add(clouds);
     
     earth.pivot = new THREE.Group();
@@ -763,8 +787,10 @@ function createCelestialBodies() {
     const moonMat = new THREE.MeshPhongMaterial({ map: moonTexture, shininess: 2 });
     moon = new THREE.Mesh(sphereGeometry, moonMat);
     moon.scale.setScalar(0.24);
-    moon.castShadow = true;
-    moon.receiveShadow = true;
+    if (renderer.shadowMap) {
+        moon.castShadow = true;
+        moon.receiveShadow = true;
+    }
     earth.pivot.add(moon);
     
     // 5. MARS
@@ -777,8 +803,10 @@ function createCelestialBodies() {
     });
     mars = new THREE.Mesh(sphereGeometry, marsMat);
     mars.scale.setScalar(0.7);
-    mars.castShadow = true;
-    mars.receiveShadow = true;
+    if (renderer.shadowMap) {
+        mars.castShadow = true;
+        mars.receiveShadow = true;
+    }
     
     mars.pivot = new THREE.Group();
     mars.pivot.rotation.z = AXIAL_TILTS.mars;
@@ -795,8 +823,10 @@ function createCelestialBodies() {
     });
     jupiter = new THREE.Mesh(sphereGeometry, jupMat);
     jupiter.scale.setScalar(2.2);
-    jupiter.castShadow = true;
-    jupiter.receiveShadow = true;
+    if (renderer.shadowMap) {
+        jupiter.castShadow = true;
+        jupiter.receiveShadow = true;
+    }
     
     jupiter.pivot = new THREE.Group();
     jupiter.pivot.rotation.z = AXIAL_TILTS.jupiter;
@@ -813,19 +843,23 @@ function createCelestialBodies() {
     });
     saturn = new THREE.Mesh(sphereGeometry, satMat);
     saturn.scale.setScalar(1.85);
-    saturn.castShadow = true;
-    saturn.receiveShadow = true;
+    if (renderer.shadowMap) {
+        saturn.castShadow = true;
+        saturn.receiveShadow = true;
+    }
     
-    // Saturn Rings
+    // Saturn Rings - Safe custom UV attributes mapping checking
     const ringGeo = new THREE.RingGeometry(1.4, 2.5, 64);
-    const posAttribute = ringGeo.attributes.position;
-    const uvAttribute = ringGeo.attributes.uv;
-    for (let i = 0; i < posAttribute.count; i++) {
-        const x = posAttribute.getX(i);
-        const y = posAttribute.getY(i);
-        const distance = Math.sqrt(x*x + y*y);
-        const u = (distance - 1.4) / (2.5 - 1.4);
-        uvAttribute.setXY(i, u, 0.5);
+    if (ringGeo.attributes && ringGeo.attributes.position && ringGeo.attributes.uv) {
+        const posAttribute = ringGeo.attributes.position;
+        const uvAttribute = ringGeo.attributes.uv;
+        for (let i = 0; i < posAttribute.count; i++) {
+            const x = posAttribute.getX(i);
+            const y = posAttribute.getY(i);
+            const distance = Math.sqrt(x*x + y*y);
+            const u = (distance - 1.4) / (2.5 - 1.4);
+            uvAttribute.setXY(i, u, 0.5);
+        }
     }
     
     const ringTex = generateSaturnRingTexture();
@@ -839,8 +873,10 @@ function createCelestialBodies() {
     saturnRings = new THREE.Mesh(ringGeo, ringMat);
     saturnRings.rotation.x = Math.PI * 0.45;
     saturnRings.rotation.y = Math.PI * 0.1;
-    saturnRings.castShadow = true;
-    saturnRings.receiveShadow = true;
+    if (renderer.shadowMap) {
+        saturnRings.castShadow = true;
+        saturnRings.receiveShadow = true;
+    }
     saturn.add(saturnRings);
     
     saturn.pivot = new THREE.Group();
@@ -858,8 +894,10 @@ function createCelestialBodies() {
     });
     uranus = new THREE.Mesh(sphereGeometry, uranusMat);
     uranus.scale.setScalar(1.2);
-    uranus.castShadow = true;
-    uranus.receiveShadow = true;
+    if (renderer.shadowMap) {
+        uranus.castShadow = true;
+        uranus.receiveShadow = true;
+    }
     
     // Uranus Ring (vertical)
     const uranusRingGeo = new THREE.RingGeometry(1.4, 1.6, 64);
@@ -889,8 +927,10 @@ function createCelestialBodies() {
     });
     neptune = new THREE.Mesh(sphereGeometry, neptMat);
     neptune.scale.setScalar(1.15);
-    neptune.castShadow = true;
-    neptune.receiveShadow = true;
+    if (renderer.shadowMap) {
+        neptune.castShadow = true;
+        neptune.receiveShadow = true;
+    }
     
     // Neptune Ring
     const neptuneRingGeo = new THREE.RingGeometry(1.3, 1.45, 64);
@@ -1292,9 +1332,30 @@ document.addEventListener('DOMContentLoaded', () => {
         slideObserver.observe(slide);
     });
     
-    // Init Visual loops
-    initThree();
-    animate();
+    // Diagnostic WebGL initialization wrapper
+    try {
+        initThree();
+        animate();
+    } catch (err) {
+        console.error("Three.js initialization failed:", err);
+        const debugDiv = document.createElement('div');
+        debugDiv.style.position = 'fixed';
+        debugDiv.style.bottom = '10px';
+        debugDiv.style.right = '10px';
+        debugDiv.style.background = 'rgba(255, 0, 0, 0.85)';
+        debugDiv.style.color = '#fff';
+        debugDiv.style.padding = '10px';
+        debugDiv.style.fontSize = '12px';
+        debugDiv.style.zIndex = '9999';
+        debugDiv.style.borderRadius = '5px';
+        debugDiv.style.fontFamily = 'monospace';
+        debugDiv.style.whiteSpace = 'pre-wrap';
+        debugDiv.style.maxWidth = '320px';
+        debugDiv.style.boxShadow = '0 0 15px rgba(0,0,0,0.5)';
+        debugDiv.textContent = "WebGL Load Error: " + err.message + "\n\nStack: " + err.stack;
+        document.body.appendChild(debugDiv);
+    }
+    
     handleScroll();
     typeEffect();
     updateCursorFollower();
