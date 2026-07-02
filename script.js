@@ -661,7 +661,7 @@ function createCelestialBodies() {
     const sunTexture = generateProceduralTexture('sun');
     const sunMat = new THREE.MeshBasicMaterial({ map: sunTexture });
     sun = new THREE.Mesh(new THREE.SphereGeometry(4.5, 64, 64), sunMat);
-    sun.position.copy(PLANET_POSITIONS.sun);
+    sun.position.set(0, 0, 0);
     scene.add(sun);
     
     // Atmospheric Glow
