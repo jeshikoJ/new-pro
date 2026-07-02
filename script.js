@@ -4,7 +4,7 @@
 
 // Global scene components
 let scene, camera, renderer;
-let sun, mercury, venus, earth, clouds, moon, mars, jupiter, saturn, saturnRings, uranus, neptune;
+let sun, mercury, venus, earth, clouds, moon, mars, jupiter, io, saturn, saturnRings, titan, uranus, neptune;
 let uranusRings, neptuneRings;
 let sunRays1, sunRays2;
 let orbitLines = [];
@@ -835,6 +835,17 @@ function createCelestialBodies() {
     jupiter.pivot.add(jupiter);
     scene.add(jupiter.pivot);
     
+    // Io (Jupiter's Moon)
+    const ioTexture = generateProceduralTexture('cratered', '#e6e655', '#998f2b');
+    const ioMat = new THREE.MeshPhongMaterial({ map: ioTexture, shininess: 1 });
+    io = new THREE.Mesh(sphereGeometry, ioMat);
+    io.scale.setScalar(0.2);
+    if (renderer.shadowMap) {
+        io.castShadow = true;
+        io.receiveShadow = true;
+    }
+    jupiter.pivot.add(io);
+    
     // 7. SATURN & RINGS
     const satMaps = generatePlanetTextures('bands', '#e6c88f', '#b08f51');
     const satMat = new THREE.MeshPhongMaterial({ 
@@ -885,6 +896,17 @@ function createCelestialBodies() {
     saturn.pivot.rotation.z = AXIAL_TILTS.saturn;
     saturn.pivot.add(saturn);
     scene.add(saturn.pivot);
+    
+    // Titan (Saturn's Moon)
+    const titanTexture = generateProceduralTexture('bands', '#e6a15c', '#a6672d');
+    const titanMat = new THREE.MeshPhongMaterial({ map: titanTexture, shininess: 3 });
+    titan = new THREE.Mesh(sphereGeometry, titanMat);
+    titan.scale.setScalar(0.28);
+    if (renderer.shadowMap) {
+        titan.castShadow = true;
+        titan.receiveShadow = true;
+    }
+    saturn.pivot.add(titan);
     
     // 8. URANUS & faint vertical rings
     const uranusMaps = generatePlanetTextures('bands', '#b0e7eb', '#67adb5');
@@ -1076,6 +1098,12 @@ function animate() {
         jupiter.pivot.position.set(Math.cos(theta) * ORBIT_RADII.jupiter, 0, Math.sin(theta) * ORBIT_RADII.jupiter);
         jupiter.rotation.y = time * 1.8;
         
+        if (io) {
+            const ioSpeed = time * 2.2;
+            io.position.set(Math.cos(ioSpeed) * 4.5, 0, Math.sin(ioSpeed) * 4.5);
+            io.rotation.y = ioSpeed;
+        }
+        
         KEYFRAMES[4].lookAt.copy(jupiter.pivot.position);
         KEYFRAMES[4].pos.copy(jupiter.pivot.position).add(CAMERA_OFFSETS.jupiter);
     }
@@ -1084,6 +1112,12 @@ function animate() {
         saturn.pivot.position.set(Math.cos(theta) * ORBIT_RADII.saturn, 0, Math.sin(theta) * ORBIT_RADII.saturn);
         saturn.rotation.y = time * 1.5;
         if (saturnRings) saturnRings.rotation.z = -time * 0.1;
+        
+        if (titan) {
+            const titanSpeed = time * 1.2;
+            titan.position.set(Math.cos(titanSpeed) * 5.8, 0, Math.sin(titanSpeed) * 5.8);
+            titan.rotation.y = titanSpeed;
+        }
         
         KEYFRAMES[5].lookAt.copy(saturn.pivot.position);
         KEYFRAMES[5].pos.copy(saturn.pivot.position).add(CAMERA_OFFSETS.saturn);
@@ -1188,6 +1222,10 @@ function animate() {
     starLayers.forEach((layer, idx) => {
         layer.rotation.y = time * (0.006 * (idx + 1));
         layer.rotation.x = time * (0.002 * (idx + 1));
+        
+        // Shimmer star opacity over time for twinkling effect
+        const baseOpacity = idx === 0 ? 0.45 : (idx === 1 ? 0.70 : 0.90);
+        layer.material.opacity = baseOpacity + Math.sin(time * 3.5 + idx * 2.0) * 0.08;
         
         const warpForce = Math.abs(camera.fov - 45) * 0.05;
         layer.scale.set(1, 1, 1 + warpForce);
