@@ -2,10 +2,10 @@
    DESIGN SYSTEM & VARIABLES
    ========================================================================== */
 :root {
-    --bg-dark: #030308;
-    --bg-card: rgba(10, 10, 25, 0.5);
-    --border-color: rgba(0, 242, 254, 0.15);
-    --border-hover: rgba(0, 242, 254, 0.4);
+    --bg-dark: #020206;
+    --bg-card: rgba(8, 8, 16, 0.72);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(0, 242, 254, 0.25);
     
     /* Neon color palette */
     --cyan-glow: #00f2fe;
@@ -13,8 +13,8 @@
     --purple-glow: #7f00ff;
     --magenta-glow: #ff007f;
     --text-primary: #ffffff;
-    --text-secondary: #a0aec0;
-    --text-muted: #718096;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
     
     /* Fonts */
     --font-orbitron: 'Orbitron', sans-serif;
@@ -111,15 +111,15 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    padding: 1.5rem 5%;
+    padding: 1.1rem 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 100;
-    background: rgba(3, 3, 8, 0.4);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    background: rgba(2, 2, 6, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     transition: var(--transition-smooth);
 }
 
@@ -145,9 +145,9 @@ body {
     text-decoration: none;
     color: var(--text-secondary);
     font-family: var(--font-orbitron);
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: 1px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 2px;
     text-transform: uppercase;
     transition: var(--transition-smooth);
     position: relative;
@@ -195,17 +195,16 @@ body {
     align-items: center;
     gap: 0.75rem;
     z-index: 50;
-    background: rgba(10, 10, 25, 0.6);
-    padding: 0.5rem 1.25rem;
-    border-radius: 30px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 0 15px rgba(0, 242, 254, 0.1);
+    background: rgba(8, 8, 16, 0.8);
+    padding: 0.45rem 1.15rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     font-family: var(--font-orbitron);
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: var(--cyan-glow);
-    text-shadow: 0 0 5px rgba(0, 242, 254, 0.4);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--text-secondary);
 }
 
 .indicator-dot {
@@ -872,17 +871,18 @@ body {
 }
 
 .contact-detail-box i {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     color: var(--cyan-glow);
-    background: rgba(0, 242, 254, 0.08);
-    border: 1px solid rgba(0, 242, 254, 0.15);
-    width: 40px;
-    height: 40px;
+    background: rgba(0, 242, 254, 0.02);
+    border: 1px solid rgba(0, 242, 254, 0.25);
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 10px rgba(0, 242, 254, 0.1);
+    box-shadow: 0 0 8px rgba(0, 242, 254, 0.05);
+    transition: var(--transition-smooth);
 }
 
 .contact-detail-box h6 {
@@ -930,9 +930,9 @@ body {
 
 .contact-form input,
 .contact-form textarea {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(255, 255, 255, 0.015);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 0.85rem 1.25rem;
     color: var(--text-primary);
     font-family: var(--font-inter);
@@ -943,49 +943,55 @@ body {
 
 .contact-form input:focus,
 .contact-form textarea:focus {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.03);
     border-color: var(--cyan-glow);
-    box-shadow: 0 0 12px rgba(0, 242, 254, 0.15);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.1);
 }
 
 .submit-btn {
-    background: linear-gradient(135deg, var(--cyan-glow) 0%, var(--blue-glow) 100%);
-    border: none;
-    color: #030308;
+    background: transparent;
+    border: 1px solid var(--cyan-glow);
+    color: var(--cyan-glow);
     font-family: var(--font-orbitron);
-    font-size: 0.85rem;
-    font-weight: 800;
-    letter-spacing: 1px;
-    padding: 1rem 1.75rem;
-    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 0.9rem 2.2rem;
+    border-radius: 30px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+    box-shadow: 0 0 12px rgba(0, 242, 254, 0.08);
     transition: var(--transition-smooth);
 }
 
 .submit-btn:hover {
+    background: linear-gradient(135deg, var(--cyan-glow) 0%, var(--blue-glow) 100%);
+    color: #020206;
+    border-color: transparent;
+    box-shadow: 0 0 25px rgba(0, 242, 254, 0.45);
     transform: translateY(-2px);
-    box-shadow: 0 0 25px rgba(0, 242, 254, 0.5);
 }
 
 /* Candidate Declaration Box */
 .declaration-block {
-    margin-top: 2rem;
+    margin-top: 2.5rem;
     padding-top: 1.5rem;
-    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .decl-text {
-    font-style: italic;
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    line-height: 1.5;
-    margin-bottom: 1rem;
+    font-style: normal;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
     text-align: center;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .decl-footer {
