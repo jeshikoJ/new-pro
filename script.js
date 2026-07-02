@@ -1339,22 +1339,6 @@ document.addEventListener('DOMContentLoaded', () => {
         animate();
     } catch (err) {
         console.error("Three.js initialization failed:", err);
-        const debugDiv = document.createElement('div');
-        debugDiv.style.position = 'fixed';
-        debugDiv.style.bottom = '10px';
-        debugDiv.style.right = '10px';
-        debugDiv.style.background = 'rgba(255, 0, 0, 0.85)';
-        debugDiv.style.color = '#fff';
-        debugDiv.style.padding = '10px';
-        debugDiv.style.fontSize = '12px';
-        debugDiv.style.zIndex = '9999';
-        debugDiv.style.borderRadius = '5px';
-        debugDiv.style.fontFamily = 'monospace';
-        debugDiv.style.whiteSpace = 'pre-wrap';
-        debugDiv.style.maxWidth = '320px';
-        debugDiv.style.boxShadow = '0 0 15px rgba(0,0,0,0.5)';
-        debugDiv.textContent = "WebGL Load Error: " + err.message + "\n\nStack: " + err.stack;
-        document.body.appendChild(debugDiv);
     }
     
     handleScroll();
