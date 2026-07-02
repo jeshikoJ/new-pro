@@ -1,15 +1,16 @@
 /* ==========================================================================
-   THREE.JS SPACE & BACKGROUND SYSTEM (ULTRA REALISM & SHADOWS)
+   THREE.JS SPACE & BACKGROUND SYSTEM (ULTRA REALISM & COMPATIBILITY)
    ========================================================================== */
 
 // Global scene components
 let scene, camera, renderer;
 let sun, mercury, venus, earth, clouds, moon, mars, jupiter, saturn, saturnRings, uranus, neptune;
-let uranusRings, neptuneRings; // Additional ring systems
-let sunRays1, sunRays2; // Volumetric sunburst planes
+let uranusRings, neptuneRings;
+let sunRays1, sunRays2;
 let orbitLines = [];
 let starLayers = [];
 let asteroids;
+let cameraLight; // Headlight to illuminate planet dark sides
 let mouseX = 0, mouseY = 0;
 
 // Camera pathing variables
@@ -118,8 +119,13 @@ function initThree() {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.07);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.06);
     scene.add(ambientLight);
+    
+    // Camera headlight (flashlight) to subtly light the dark/shadow side of planets
+    cameraLight = new THREE.PointLight(0xffffff, 0.38, 250, 0.6);
+    cameraLight.position.copy(camera.position);
+    scene.add(cameraLight);
     
     // Sun light (Point light casting shadows in all directions)
     const sunLight = new THREE.PointLight(0xfff5e6, 2.5, 550, 0.45);
@@ -129,14 +135,14 @@ function initThree() {
     sunLight.shadow.mapSize.height = 1024;
     sunLight.shadow.camera.near = 0.5;
     sunLight.shadow.camera.far = 380;
-    sunLight.shadow.bias = -0.002; // Prevents shadow acne artifacts
+    sunLight.shadow.bias = -0.002;
     scene.add(sunLight);
     
     // Distant cosmic ambient lighting
-    const spaceLight1 = new THREE.DirectionalLight(0x00f2fe, 0.1);
+    const spaceLight1 = new THREE.DirectionalLight(0x00f2fe, 0.08);
     spaceLight1.position.set(100, 50, -100);
     scene.add(spaceLight1);
-    const spaceLight2 = new THREE.DirectionalLight(0x7f00ff, 0.05);
+    const spaceLight2 = new THREE.DirectionalLight(0x7f00ff, 0.04);
     spaceLight2.position.set(-100, -50, -200);
     scene.add(spaceLight2);
     
@@ -159,7 +165,7 @@ function initThree() {
    ========================================================================== */
 
 function generateProceduralTexture(type, colorBase, colorDetail) {
-    const size = type === 'sunray' ? 512 : 1024; // High res textures
+    const size = type === 'sunray' ? 512 : 1024;
     const canvas = document.createElement('canvas');
     canvas.width = size;
     canvas.height = type === 'sunray' ? size : size / 2;
@@ -183,7 +189,6 @@ function generateProceduralTexture(type, colorBase, colorDetail) {
         }
     } 
     else if (type === 'sunray') {
-        // Volumetric flares gradient
         ctx.clearRect(0, 0, size, size);
         const grad = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
         grad.addColorStop(0, 'rgba(255, 210, 100, 0.9)');
@@ -193,7 +198,6 @@ function generateProceduralTexture(type, colorBase, colorDetail) {
         ctx.fillStyle = grad;
         ctx.beginPath(); ctx.arc(256, 256, 256, 0, Math.PI * 2); ctx.fill();
         
-        // Draw flare spokes
         ctx.strokeStyle = 'rgba(255, 180, 50, 0.1)';
         ctx.lineWidth = 3;
         for (let i = 0; i < 45; i++) {
@@ -248,7 +252,7 @@ function generatePlanetTextures(type, colorBase, colorDetail) {
             bCtx.fillRect(0, y, size, Math.random() * 8 + 1);
         }
         
-        if (colorDetail === '#d14905') { // Jupiter Red Spot & storms
+        if (colorDetail === '#d14905') { // Jupiter Red Spot
             ctx.fillStyle = '#b32b00';
             ctx.beginPath(); ctx.ellipse(640, 320, 50, 28, 0, 0, Math.PI * 2); ctx.fill();
             ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 3; ctx.stroke();
@@ -382,9 +386,9 @@ function generateSaturnRingTexture() {
     const grad = ctx.createLinearGradient(0, 0, 512, 0);
     grad.addColorStop(0, 'rgba(168, 142, 107, 0.0)');
     grad.addColorStop(0.2, 'rgba(195, 175, 145, 0.9)');
-    grad.addColorStop(0.5, 'rgba(120, 110, 95, 0.1)'); // Cassini Division
+    grad.addColorStop(0.5, 'rgba(120, 110, 95, 0.1)');
     grad.addColorStop(0.65, 'rgba(180, 160, 130, 0.85)');
-    grad.addColorStop(0.85, 'rgba(150, 130, 100, 0.5)'); // Encke Division
+    grad.addColorStop(0.85, 'rgba(150, 130, 100, 0.5)');
     grad.addColorStop(1.0, 'rgba(168, 142, 107, 0.0)');
     
     ctx.fillStyle = grad;
@@ -399,6 +403,7 @@ function generateSaturnRingTexture() {
    ========================================================================== */
 
 function createStarfield() {
+    // Parallax star layers - using robust version-proof PointsMaterial configurations
     createStarLayer(4000, 0.45, 0.4, 900);
     createStarLayer(1500, 0.80, 0.7, 600);
     createStarLayer(400,  1.35, 0.9, 300);
@@ -407,7 +412,6 @@ function createStarfield() {
 function createStarLayer(count, size, opacity, radiusRange) {
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
     
     for (let i = 0; i < count; i++) {
         const r = (Math.random() * 0.5 + 0.5) * radiusRange;
@@ -419,29 +423,21 @@ function createStarLayer(count, size, opacity, radiusRange) {
         positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
         positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
         positions[i * 3 + 2] = r * Math.cos(phi);
-        
-        const rand = Math.random();
-        if (rand > 0.85) {
-            colors[i * 3] = 0.0;     // Cyan
-            colors[i * 3 + 1] = 0.9;
-            colors[i * 3 + 2] = 1.0;
-        } else if (rand > 0.7) {
-            colors[i * 3] = 0.6;     // Purple
-            colors[i * 3 + 1] = 0.1;
-            colors[i * 3 + 2] = 0.9;
-        } else {
-            colors[i * 3] = 1.0;     // White
-            colors[i * 3 + 1] = 1.0;
-            colors[i * 3 + 2] = 1.0;
-        }
     }
     
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    
+    // Safe uniform colors mapped to layer depths (removes breaking vertexColor constants)
+    let colorVal = 0xffffff;
+    if (radiusRange === 300) {
+        colorVal = 0x00f2fe; // Cyan near stars
+    } else if (radiusRange === 600) {
+        colorVal = 0x7f00ff; // Purple mid stars
+    }
     
     const material = new THREE.PointsMaterial({
         size: size,
-        vertexColors: true,
+        color: colorVal,
         transparent: true,
         opacity: opacity,
         sizeAttenuation: true
@@ -454,7 +450,7 @@ function createStarLayer(count, size, opacity, radiusRange) {
 
 // Instanced 3D Asteroid Belt (High Performance Realism)
 function createAsteroidBelt() {
-    const count = 350; // 350 actual 3D rocks casting and receiving shadows
+    const count = 350;
     const rockGeo = new THREE.DodecahedronGeometry(0.12, 1);
     
     const rockMat = new THREE.MeshStandardMaterial({
@@ -525,7 +521,6 @@ function createOrbitRings() {
 }
 
 function createCelestialBodies() {
-    // Smoother 64-segment spheres for planets
     const sphereGeometry = new THREE.SphereGeometry(1, 64, 64);
     
     // 1. SUN
@@ -637,7 +632,7 @@ function createCelestialBodies() {
         opacity: 0.42
     });
     clouds = new THREE.Mesh(new THREE.SphereGeometry(1.025, 64, 64), cloudMat);
-    clouds.castShadow = true; // Clouds cast shadows onto Earth!
+    clouds.castShadow = true;
     clouds.receiveShadow = true;
     earth.add(clouds);
     
@@ -741,8 +736,13 @@ function createCelestialBodies() {
     scene.add(saturnPivot);
     
     // 8. URANUS & faint vertical rings
-    const uranusTexture = generateProceduralTexture('bands', '#b0e7eb', '#67adb5');
-    const uranusMat = new THREE.MeshPhongMaterial({ map: uranusTexture, shininess: 5 });
+    const uranusMaps = generatePlanetTextures('bands', '#b0e7eb', '#67adb5');
+    const uranusMat = new THREE.MeshPhongMaterial({ 
+        map: uranusMaps.map, 
+        bumpMap: uranusMaps.bumpMap,
+        bumpScale: 0.01,
+        shininess: 5 
+    });
     uranus = new THREE.Mesh(sphereGeometry, uranusMat);
     uranus.scale.setScalar(1.2);
     uranus.castShadow = true;
@@ -757,7 +757,7 @@ function createCelestialBodies() {
         opacity: 0.25
     });
     uranusRings = new THREE.Mesh(uranusRingGeo, uranusRingMat);
-    uranusRings.rotation.x = Math.PI * 0.5; // orthogonal
+    uranusRings.rotation.x = Math.PI * 0.5;
     uranusRings.rotation.y = Math.PI * 0.05;
     uranus.add(uranusRings);
     
@@ -768,8 +768,13 @@ function createCelestialBodies() {
     scene.add(uranusPivot);
     
     // 9. NEPTUNE & faint rings
-    const neptTexture = generateProceduralTexture('bands', '#305494', '#0d1d3f');
-    const neptMat = new THREE.MeshPhongMaterial({ map: neptTexture, shininess: 5 });
+    const neptMaps = generatePlanetTextures('bands', '#305494', '#0d1d3f');
+    const neptMat = new THREE.MeshPhongMaterial({ 
+        map: neptMaps.map, 
+        bumpMap: neptMaps.bumpMap,
+        bumpScale: 0.01,
+        shininess: 5 
+    });
     neptune = new THREE.Mesh(sphereGeometry, neptMat);
     neptune.scale.setScalar(1.15);
     neptune.castShadow = true;
@@ -886,6 +891,11 @@ function animate() {
     
     camera.lookAt(currentCameraTarget);
     
+    // Update camera headlight position to match camera, illuminating planet dark sides
+    if (cameraLight) {
+        cameraLight.position.copy(camera.position);
+    }
+    
     // 2. Camera FOV Warp Speed decay
     camera.fov += (fovWarpTarget - camera.fov) * 0.08;
     fovWarpTarget += (45 - fovWarpTarget) * 0.06;
@@ -893,7 +903,7 @@ function animate() {
     
     const time = Date.now() * 0.0003;
     
-    // 3. Volumetric Sun Flare shimmers (Counter-rotating planes)
+    // 3. Volumetric Sun Flare shimmers
     if (sunRays1) sunRays1.rotation.z = time * 0.07;
     if (sunRays2) sunRays2.rotation.z = -time * 0.04;
     
@@ -938,7 +948,7 @@ function animate() {
         asteroids.rotation.y = time * 0.06;
     }
     
-    // Star layers drift
+    // Star layers drift with version-proof parallax scaling
     starLayers.forEach((layer, idx) => {
         layer.rotation.y = time * (0.006 * (idx + 1));
         layer.rotation.x = time * (0.002 * (idx + 1));
