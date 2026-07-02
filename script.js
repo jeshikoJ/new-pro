@@ -18,9 +18,10 @@ let comets = [];
 // Nebula dust variables
 let nebulae = [];
 
-// Custom Cursor variables
+// Custom Cursor and Parallax variables
 let cursorX = 0, cursorY = 0;
 let followerX = 0, followerY = 0;
+let mouseX = 0, mouseY = 0;
 
 // Camera pathing variables
 const currentCameraPos = new THREE.Vector3(0, 10, 50);
