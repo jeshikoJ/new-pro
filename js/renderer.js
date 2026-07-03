@@ -1,4 +1,4 @@
-import * as THREE from 'https://unpkg.com/three@0.128.0/build/three.module.js';
+import * as THREE from 'three';
 
 export function createRenderer(canvas) {
     const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });

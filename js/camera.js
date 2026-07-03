@@ -1,4 +1,4 @@
-import * as THREE from 'https://unpkg.com/three@0.128.0/build/three.module.js';
+import * as THREE from 'three';
 
 export const currentCameraPos = new THREE.Vector3(0, 10, 50);
 export const currentCameraTarget = new THREE.Vector3(0, 0, 0);
