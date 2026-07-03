@@ -59,7 +59,7 @@ function onWindowResize() {
 }
 
 // Global DOM hooks & startup configuration
-document.addEventListener('DOMContentLoaded', () => {
+function initAll() {
     const menuBtn = document.querySelector('.nav-mobile-btn');
     const navLinks = document.querySelector('.nav-links');
     const links = document.querySelectorAll('.nav-links a');
@@ -146,4 +146,10 @@ document.addEventListener('DOMContentLoaded', () => {
     typeEffect();
     updateCursorFollower();
     setupCardTilts();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+} else {
+    initAll();
+}
