@@ -5,9 +5,9 @@ import {
     AXIAL_TILTS, ORBIT_RADII, ORBIT_SPEEDS, CAMERA_OFFSETS, KEYFRAMES
 } from './planets.js';
 import { starLayers } from './stars.js';
-import { asteroids, nebulae, updateSpaceDust } from './particles.js';
+import { asteroids, nebulae, updateSpaceDust, updateAsteroids } from './particles.js';
 import { mouseX, mouseY } from './controls.js';
-import { cameraLight } from './lighting.js';
+import { cameraLight, sunLight } from './lighting.js';
 import { composer } from './postprocessing.js';
 import { currentCameraPos, currentCameraTarget, targetCameraPos, targetCameraTarget, fovWarpTarget } from './camera.js';
 
@@ -153,11 +153,13 @@ export function animate() {
         const rayPulse = 1.0 + Math.cos(time * 2.8) * 0.03;
         sunRays2.scale.set(rayPulse, rayPulse, rayPulse);
     }
-    
-    // 5. Instanced 3D Belt revolving centered at Sun
-    if (asteroids) {
-        asteroids.rotation.y = time * 0.06;
+    if (sunLight) {
+        // Dynamic solar light energy flicker
+        sunLight.intensity = 2.45 + Math.sin(time * 3.5) * 0.12 + (Math.random() - 0.5) * 0.05;
     }
+    
+    // 5. Instanced 3D Belt revolving & spinning individually
+    updateAsteroids(time);
     
     // 6. Comet highly eccentric orbit animation & sublimation tail growth
     comets.forEach(comet => {
@@ -172,9 +174,17 @@ export function animate() {
         // Dynamically scale tail length and opacity based on proximity to the Sun
         const dist = Math.sqrt(x*x + y*y + z*z);
         const proximity = 1.0 - Math.min(1.0, Math.max(0.0, (dist - comet.b) / (comet.a - comet.b)));
-        const tailLen = 0.5 + proximity * 1.6;
+        const tailLen = 0.5 + proximity * 2.0;
         comet.tail.scale.set(1.0, 1.0, tailLen);
-        comet.tail.material.opacity = 0.1 + proximity * 0.32;
+        
+        const intensity = Math.pow(proximity, 2.5);
+        comet.tail.material.opacity = intensity * 0.45;
+        
+        const nucleus = comet.group.children[0];
+        if (nucleus && nucleus.material) {
+            nucleus.material.transparent = true;
+            nucleus.material.opacity = intensity;
+        }
     });
     
     // 7. Pulse orbit lines glow independently

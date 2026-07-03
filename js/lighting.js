@@ -1,6 +1,7 @@
 import * as THREE from 'https://esm.sh/three@0.128.0';
 
 export let cameraLight;
+export let sunLight;
 
 export function setupLighting(scene, camera) {
     // Ambient light
@@ -13,7 +14,7 @@ export function setupLighting(scene, camera) {
     scene.add(cameraLight);
     
     // Sun PointLight (shadow casting)
-    const sunLight = new THREE.PointLight(0xfff5e6, 2.5, 550, 0.45);
+    sunLight = new THREE.PointLight(0xfff5e6, 2.5, 550, 0.45);
     sunLight.position.set(0, 0, 0);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = 1024;

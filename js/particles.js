@@ -5,6 +5,8 @@ export let asteroids;
 export const nebulae = [];
 export let spaceDust;
 
+export const asteroidData = [];
+
 export function createAsteroidBelt(scene) {
     const count = 350;
     const rockGeo = new THREE.DodecahedronGeometry(0.12, 1);
@@ -20,6 +22,7 @@ export function createAsteroidBelt(scene) {
         asteroids.castShadow = true;
         asteroids.receiveShadow = true;
         
+        asteroidData.length = 0;
         const dummy = new THREE.Object3D();
         
         for (let i = 0; i < count; i++) {
@@ -30,9 +33,28 @@ export function createAsteroidBelt(scene) {
             const y = (Math.random() - 0.5) * 1.8;
             const z = Math.sin(angle) * radius;
             
-            dummy.position.set(x, y, z);
-            dummy.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
             const scale = Math.random() * 0.8 + 0.4;
+            
+            const spinSpeedX = (Math.random() - 0.5) * 0.8;
+            const spinSpeedY = (Math.random() - 0.5) * 0.8;
+            const spinSpeedZ = (Math.random() - 0.5) * 0.8;
+            
+            const rotX = Math.random() * Math.PI;
+            const rotY = Math.random() * Math.PI;
+            const rotZ = Math.random() * Math.PI;
+            
+            asteroidData.push({
+                radius,
+                angle,
+                orbitSpeed: 0.03 + Math.random() * 0.04,
+                yOffset: y,
+                scale,
+                spinSpeed: new THREE.Vector3(spinSpeedX, spinSpeedY, spinSpeedZ),
+                rotation: new THREE.Vector3(rotX, rotY, rotZ)
+            });
+            
+            dummy.position.set(x, y, z);
+            dummy.rotation.set(rotX, rotY, rotZ);
             dummy.scale.set(scale, scale, scale);
             
             dummy.updateMatrix();
@@ -41,6 +63,32 @@ export function createAsteroidBelt(scene) {
         
         scene.add(asteroids);
     }
+}
+
+export function updateAsteroids(time) {
+    if (!asteroids) return;
+    const dummy = new THREE.Object3D();
+    const count = asteroidData.length;
+    
+    for (let i = 0; i < count; i++) {
+        const data = asteroidData[i];
+        
+        const currentAngle = data.angle + time * data.orbitSpeed;
+        const x = Math.cos(currentAngle) * data.radius;
+        const z = Math.sin(currentAngle) * data.radius;
+        
+        dummy.position.set(x, data.yOffset, z);
+        
+        const rx = data.rotation.x + time * data.spinSpeed.x;
+        const ry = data.rotation.y + time * data.spinSpeed.y;
+        const rz = data.rotation.z + time * data.spinSpeed.z;
+        dummy.rotation.set(rx, ry, rz);
+        
+        dummy.scale.setScalar(data.scale);
+        dummy.updateMatrix();
+        asteroids.setMatrixAt(i, dummy.matrix);
+    }
+    asteroids.instanceMatrix.needsUpdate = true;
 }
 
 export function createSpaceDust(scene) {
