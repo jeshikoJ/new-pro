@@ -3,7 +3,7 @@
    ========================================================================== */
 :root {
     --bg-dark: #020206;
-    --bg-card: rgba(8, 8, 16, 0.72);
+    --bg-card: rgba(8, 8, 18, 0.45);
     --border-color: rgba(255, 255, 255, 0.08);
     --border-hover: rgba(0, 242, 254, 0.25);
     
@@ -270,13 +270,13 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 20px;
     padding: 2.5rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.06);
     transition: var(--transition-smooth);
 }
 
 .panel-card:hover {
     border-color: var(--border-hover);
-    box-shadow: 0 15px 40px rgba(0, 242, 254, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 60px rgba(0, 242, 254, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 /* Card Floating Layout Alignment */
