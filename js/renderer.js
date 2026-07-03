@@ -1,4 +1,4 @@
-import * as THREE from 'https://cdn.skypack.dev/three@0.128.0';
+import * as THREE from 'three';
 
 export function createRenderer(canvas) {
     const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });

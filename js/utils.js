@@ -1,4 +1,4 @@
-import * as THREE from 'https://cdn.skypack.dev/three@0.128.0';
+import * as THREE from 'three';
 
 export function generateProceduralTexture(type, colorBase, colorDetail) {
     const size = type === 'sunray' || type === 'nebula' ? 512 : 1024;
