@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from 'https://esm.sh/three@0.128.0';
 
 export function generateProceduralTexture(type, colorBase, colorDetail) {
     const size = type === 'sunray' || type === 'nebula' ? 512 : 1024;

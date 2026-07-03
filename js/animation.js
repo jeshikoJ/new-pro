@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from 'https://esm.sh/three@0.128.0';
 import { 
     sun, mercury, venus, earth, clouds, moon, mars, jupiter, io, saturn, saturnRings, titan, uranus, neptune,
     uranusRings, neptuneRings, sunRays1, sunRays2, orbitLines, comets,

@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from 'https://esm.sh/three@0.128.0';
 
 export function createRenderer(canvas) {
     const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });

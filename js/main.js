@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from 'https://esm.sh/three@0.128.0';
 import { createScene } from './scene.js';
 import { createCamera, updateCameraPath } from './camera.js';
 import { createRenderer } from './renderer.js';

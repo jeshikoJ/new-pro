@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from 'https://esm.sh/three@0.128.0';
 import { 
     generateProceduralTexture, 
     generatePlanetTextures, 
